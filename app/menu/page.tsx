@@ -213,7 +213,7 @@ export default function MenuPage() {
         body: JSON.stringify({ name }),
       });
 
-      const payload = await response.json();
+      const payload = await readResponsePayload(response);
       if (!response.ok) throw new Error(payload.error || 'Failed to create category');
 
       // Invalidate categories cache
@@ -236,9 +236,26 @@ export default function MenuPage() {
       return;
     }
 
+    const maxFileSizeBytes = 2 * 1024 * 1024;
+    if (file.size > maxFileSizeBytes) {
+      toast.error('Image is too large. Please use a file under 2 MB.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => setImagePreview(String(reader.result || ''));
     reader.readAsDataURL(file);
+  };
+
+  const readResponsePayload = async (response: Response) => {
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      return response.json();
+    }
+
+    const text = await response.text();
+    return { error: text || 'Unexpected server response.' };
   };
 
   const handleMenuCreate = async () => {
@@ -259,7 +276,7 @@ export default function MenuPage() {
         body: JSON.stringify({ name, description, price, category, image: imagePreview }),
       });
 
-      const payload = await response.json();
+      const payload = await readResponsePayload(response);
       if (!response.ok) throw new Error(payload.error || 'Failed to create menu item');
 
       // Invalidate menu cache so the new item appears in lists
