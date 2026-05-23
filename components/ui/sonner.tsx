@@ -4,7 +4,7 @@ import { useTheme } from '@/app/providers'
 import { Toaster as Sonner, ToasterProps } from 'sonner'
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = 'system' } = useTheme()
+  const { theme = 'light' } = useTheme()
 
   return (
     <Sonner

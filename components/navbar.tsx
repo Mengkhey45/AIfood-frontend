@@ -3,18 +3,21 @@
 import Link from 'next/link';
 import { Bell, Menu, ClipboardList, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
+import NotificationsPopover from './notifications-popover';
+import * as React from 'react';
 
 interface NavbarProps {
   currentPage?: 'menu' | 'dashboard' | 'insights' | 'orders';
 }
 
 export function Navbar({ currentPage }: NavbarProps) {
+  const [open, setOpen] = React.useState(false);
+
   return (
     <nav className="sticky top-0 z-50 border-b border-neutral-200 bg-white shadow-sm">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-indigo-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-sky-500 to-indigo-600">
             <Coffee className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -58,12 +61,18 @@ export function Navbar({ currentPage }: NavbarProps) {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Button variant="ghost" size="icon" className="relative">
+        <div className="relative flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Open notifications"
+          >
             <Bell className="h-5 w-5" />
-            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
           </Button>
+          {open && <NotificationsPopover onClose={() => setOpen(false)} />}
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
           </Button>
